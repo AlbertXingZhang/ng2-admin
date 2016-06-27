@@ -5,6 +5,7 @@ import {GoogleMaps} from './components/googleMaps';
 import {LeafletMaps} from "./components/leafletMaps";
 import {BubbleMaps} from "./components/bubbleMaps";
 import {LineMaps} from "./components/lineMaps";
+import {EsriMaps} from "./components/EsriMaps";
 
 @Component({
   selector: 'maps',
@@ -35,6 +36,11 @@ import {LineMaps} from "./components/lineMaps";
     component: LineMaps,
     path: '/line-maps',
   },
+  {
+      name: 'EsriMaps',
+      component: EsriMaps,
+      path: '/esri-maps',
+  }
 ])
 export class Maps {
 

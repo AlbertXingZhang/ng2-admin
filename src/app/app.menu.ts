@@ -102,6 +102,10 @@ export const menuItems = [
       {
         title: 'Line Maps',
         component: 'LineMaps',
+      },
+      {
+        title: 'Esri Maps',
+        component: 'EsriMaps',
       }
     ]
   },
