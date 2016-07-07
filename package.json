@@ -80,7 +80,8 @@
     "webpack-md5-hash": "^0.0.5",
     "webpack-merge": "^0.14.0",
     "gulp": "^3.9.1",
-    "gulp-util": "^3.0.7"
+    "gulp-util": "^3.0.7",
+    "bower": "^1.7.9"
   },
   "scripts": {
     "rimraf": "rimraf",

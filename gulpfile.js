@@ -2,7 +2,6 @@
 var gutil = require("gulp-util");
 var webpack = require("webpack");
 var WebpackDevServer = require("webpack-dev-server");
-var webpackConfig = require("./webpack.config.js");
 
 // The development server (the recommended option for development)
 gulp.task("default", ["webpack-dev-server"]);
@@ -20,41 +19,44 @@ gulp.task("build", ["webpack:build"]);
 
 gulp.task("webpack:build", function (callback) {
     // modify some webpack config options
-    var myConfig = Object.create(webpackConfig);
+    var myConfig = require("./config/webpack.prod.js");
+    myConfig.output.path = "wwwroot";
+    myConfig.output.sourceMapFilename = "[file].map";
     myConfig.plugins = myConfig.plugins.concat(
-		new webpack.DefinePlugin({
-		    "process.env": {
-		        // This has effect on the react lib size
-		        "NODE_ENV": JSON.stringify("production")
-		    }
-		}),
-		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.UglifyJsPlugin()
+		new webpack.ProgressPlugin(function (percentage, msg) {
+		    gutil.log(Math.floor(percentage * 100) + "%", msg);
+		})
 	);
 
     // run webpack
     webpack(myConfig, function (err, stats) {
         if (err) throw new gutil.PluginError("webpack:build", err);
         gutil.log("[webpack:build]", stats.toString({
+            errorDetails: true,
+            cached: true,
             colors: true
         }));
         callback();
     });
 });
 
-// modify some webpack config options
-var myDevConfig = Object.create(webpackConfig);
-myDevConfig.devtool = "sourcemap";
-myDevConfig.debug = true;
-
-// create a single instance of the compiler to allow caching
-var devCompiler = webpack(myDevConfig);
-
 gulp.task("webpack:build-dev", function (callback) {
+    // modify some webpack config options
+    var myConfig = require("./config/webpack.dev.js");
+    myConfig.output.path = "wwwroot";
+    myConfig.output.sourceMapFilename = "[file].map";
+    myConfig.plugins = myConfig.plugins.concat(
+		new webpack.ProgressPlugin(function (percentage, msg) {
+		    gutil.log(Math.floor(percentage * 100) + "%", msg);
+		})
+	);
+
     // run webpack
-    devCompiler.run(function (err, stats) {
+    webpack(myConfig, function (err, stats) {
         if (err) throw new gutil.PluginError("webpack:build-dev", err);
         gutil.log("[webpack:build-dev]", stats.toString({
+            errorDetails: true,
+            cached: true,
             colors: true
         }));
         callback();
@@ -63,14 +65,20 @@ gulp.task("webpack:build-dev", function (callback) {
 
 gulp.task("webpack-dev-server", function (callback) {
     // modify some webpack config options
-    var myConfig = Object.create(webpackConfig);
-    myConfig.devtool = "eval";
-    myConfig.debug = true;
+    var myConfig = require("./config/webpack.dev.js");
+    myConfig.output.sourceMapFilename = "[file].map";
+    myConfig.plugins = myConfig.plugins.concat(
+		new webpack.ProgressPlugin(function (percentage, msg) {
+		    gutil.log(Math.floor(percentage * 100) + "%", msg);
+		})
+	);
 
     // Start a webpack-dev-server
     new WebpackDevServer(webpack(myConfig), {
-        publicPath: "/" + myConfig.output.publicPath,
+        contentBase: "src",
         stats: {
+            errorDetails: true,
+            cached: true,
             colors: true
         }
     }).listen(8080, "localhost", function (err) {
@@ -83,9 +91,4 @@ var rimraf = require("rimraf");
 
 gulp.task("clean", function (cb) {
     rimraf("{wwwroot,dist}/**/*", cb);
-});
-
-gulp.task("dist", function () {
-    return gulp.src("dist/**/*")
-        .pipe(gulp.dest("wwwroot"));
 });
