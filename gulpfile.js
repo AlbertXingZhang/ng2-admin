@@ -3,6 +3,10 @@ var gutil = require("gulp-util");
 var webpack = require("webpack");
 var WebpackDevServer = require("webpack-dev-server");
 
+function handler(percentage, msg) {
+    gutil.log((percentage * 100).toFixed(2) + "%", msg);
+}
+
 // The development server (the recommended option for development)
 gulp.task("default", ["webpack-dev-server"]);
 
@@ -21,12 +25,9 @@ gulp.task("webpack:build", function (callback) {
     // modify some webpack config options
     var myConfig = require("./config/webpack.prod.js");
     myConfig.output.path = "wwwroot";
-    myConfig.output.sourceMapFilename = "[file].map";
     myConfig.plugins = myConfig.plugins.concat(
-		new webpack.ProgressPlugin(function (percentage, msg) {
-		    gutil.log(Math.floor(percentage * 100) + "%", msg);
-		})
-	);
+        new webpack.ProgressPlugin(handler)
+    );
 
     // run webpack
     webpack(myConfig, function (err, stats) {
@@ -40,19 +41,19 @@ gulp.task("webpack:build", function (callback) {
     });
 });
 
-gulp.task("webpack:build-dev", function (callback) {
-    // modify some webpack config options
-    var myConfig = require("./config/webpack.dev.js");
-    myConfig.output.path = "wwwroot";
-    myConfig.output.sourceMapFilename = "[file].map";
-    myConfig.plugins = myConfig.plugins.concat(
-		new webpack.ProgressPlugin(function (percentage, msg) {
-		    gutil.log(Math.floor(percentage * 100) + "%", msg);
-		})
-	);
+// modify some webpack config options
+var myDevConfig = require("./config/webpack.dev.js");
+myDevConfig.output.path = "wwwroot";
+myDevConfig.plugins = myDevConfig.plugins.concat(
+    new webpack.ProgressPlugin(handler)
+);
 
+// create a single instance of the compiler to allow caching
+var devCompiler = webpack(myDevConfig);
+
+gulp.task("webpack:build-dev", function (callback) {
     // run webpack
-    webpack(myConfig, function (err, stats) {
+    devCompiler.run(function (err, stats) {
         if (err) throw new gutil.PluginError("webpack:build-dev", err);
         gutil.log("[webpack:build-dev]", stats.toString({
             errorDetails: true,
@@ -66,19 +67,17 @@ gulp.task("webpack:build-dev", function (callback) {
 gulp.task("webpack-dev-server", function (callback) {
     // modify some webpack config options
     var myConfig = require("./config/webpack.dev.js");
-    myConfig.output.sourceMapFilename = "[file].map";
+    myConfig.output.path = __dirname + "/wwwroot";
     myConfig.plugins = myConfig.plugins.concat(
-		new webpack.ProgressPlugin(function (percentage, msg) {
-		    gutil.log(Math.floor(percentage * 100) + "%", msg);
-		})
+		new webpack.ProgressPlugin(handler)
 	);
 
     // Start a webpack-dev-server
     new WebpackDevServer(webpack(myConfig), {
         contentBase: "src",
         stats: {
-            errorDetails: true,
-            cached: true,
+            //errorDetails: true,
+            //cached: true,
             colors: true
         }
     }).listen(8080, "localhost", function (err) {

@@ -14,6 +14,7 @@ import {Layouts} from './forms/components/layouts/layouts.component';
 import {BasicTables} from './tables/components/basicTables/basicTables.component';
 import {Tables} from './tables/tables.component';
 import {Maps} from './maps/maps.component';
+import {EsriMaps} from './maps/components/esriMaps/esriMaps.component';
 import {GoogleMaps} from './maps/components/googleMaps/googleMaps.component';
 import {LeafletMaps} from './maps/components/leafletMaps/leafletMaps.component';
 import {BubbleMaps} from './maps/components/bubbleMaps/bubbleMaps.component';
@@ -235,6 +236,15 @@ export const PagesRoutes:RouterConfig = [
           }
         },
         children: [
+          {
+            path: 'esrimaps',
+            component: EsriMaps,
+            data: {
+              menu: {
+                title: 'Esri Maps',
+              }
+            }
+          },
           {
             path: 'googlemaps',
             component: GoogleMaps,
