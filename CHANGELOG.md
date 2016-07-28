@@ -1,3 +1,27 @@
+<a name="0.4.1"></a>
+# 0.4.1 (2016-07-28)
+
+### Bug Fixes
+
+* Fix menu and router configuration
+* Fix broken dependencies
+
+### Features
+
+* Dependencies updated
+* Use @types instead of typings
+
+### BREAKING CHANGES
+
+* Typings were removed, now we use @types instead, more details [here](https://github.com/AngularClass/angular2-webpack-starter#types)
+
+### How to update
+
+* Remove node_modules folder
+* Remove typings folder and move all custom typings to package.json
+* run `npm install`
+
+
 <a name="0.4.0"></a>
 # 0.4.0 (2016-07-12)
 
@@ -15,7 +39,7 @@
 * Sidebar rewritten, menu merged with routes configuration
 * New CKEditor component
 * New Image Uploader component
-* New Three view component
+* New Tree view component
 * New Rating component
 * New Checkbox and multi-checkbox component
 
