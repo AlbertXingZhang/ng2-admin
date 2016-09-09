@@ -3,9 +3,10 @@ var gutil = require("gulp-util");
 var webpack = require("webpack");
 var WebpackDevServer = require("webpack-dev-server");
 
-function handler(percentage, msg) {
-    gutil.log((percentage * 100).toFixed(2) + "%", msg);
-}
+var ProgressPlugin = new webpack.ProgressPlugin(
+    function (percentage, msg) {
+        gutil.log((percentage * 100).toFixed(2) + "%", msg);
+    });
 
 // The development server (the recommended option for development)
 gulp.task("default", ["webpack-dev-server"]);
@@ -14,50 +15,65 @@ gulp.task("default", ["webpack-dev-server"]);
 // Advantage: No server required, can run app from filesystem
 // Disadvantage: Requests are not blocked until bundle is available,
 //               can serve an old app on refresh
-gulp.task("build-dev", ["webpack:build-dev"], function () {
-    gulp.watch(["src/**/*"], ["webpack:build-dev"]);
+gulp.task("build-dev", function (callback) {
+    // modify some webpack config options
+    var myConfig = require("./config/webpack.dev.js");
+    myConfig.output.path = "wwwroot";
+    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
+
+    // run webpack
+    webpack(myConfig, callback).watch(null, function (err, stats) {
+        if (err) throw new gutil.PluginError("build-dev", err);
+        gutil.log("[build-dev]", stats.toString({
+            colors: true
+        }));
+    });
 });
 
 // Production build
-gulp.task("build", ["webpack:build"]);
-
-gulp.task("webpack:build", function (callback) {
+gulp.task("build", function (callback) {
     // modify some webpack config options
     var myConfig = require("./config/webpack.prod.js");
+    myConfig.bail = true;
     myConfig.output.path = "wwwroot";
-    myConfig.plugins = myConfig.plugins.concat(
-        new webpack.ProgressPlugin(handler)
-    );
+    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 
     // run webpack
     webpack(myConfig, function (err, stats) {
-        if (err) throw new gutil.PluginError("webpack:build", err);
-        gutil.log("[webpack:build]", stats.toString({
-            errorDetails: true,
-            cached: true,
+        if (err) throw new gutil.PluginError("build", err);
+        gutil.log("[build]", stats.toString({
             colors: true
         }));
         callback();
     });
 });
 
-// modify some webpack config options
-var myDevConfig = require("./config/webpack.dev.js");
-myDevConfig.output.path = "wwwroot";
-myDevConfig.plugins = myDevConfig.plugins.concat(
-    new webpack.ProgressPlugin(handler)
-);
+gulp.task("webpack:build", function (callback) {
+    // modify some webpack config options
+    var myConfig = require("./config/webpack.prod.js");
+    myConfig.output.path = "wwwroot";
+    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 
-// create a single instance of the compiler to allow caching
-var devCompiler = webpack(myDevConfig);
+    // run webpack
+    webpack(myConfig, function (err, stats) {
+        if (err) throw new gutil.PluginError("webpack:build", err);
+        gutil.log("[webpack:build]", stats.toString({
+            colors: true
+        }));
+        callback();
+    });
+});
 
 gulp.task("webpack:build-dev", function (callback) {
+    // modify some webpack config options
+    var myConfig = require("./config/webpack.dev.js");
+    myConfig.output.path = "wwwroot";
+    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
+
     // run webpack
-    devCompiler.run(function (err, stats) {
+    webpack(myConfig, function (err, stats) {
         if (err) throw new gutil.PluginError("webpack:build-dev", err);
         gutil.log("[webpack:build-dev]", stats.toString({
-            errorDetails: true,
-            cached: true,
             colors: true
         }));
         callback();
@@ -68,16 +84,12 @@ gulp.task("webpack-dev-server", function (callback) {
     // modify some webpack config options
     var myConfig = require("./config/webpack.dev.js");
     myConfig.output.path = __dirname + "/wwwroot";
-    myConfig.plugins = myConfig.plugins.concat(
-		new webpack.ProgressPlugin(handler)
-	);
+    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 
     // Start a webpack-dev-server
     new WebpackDevServer(webpack(myConfig), {
         contentBase: "src",
         stats: {
-            //errorDetails: true,
-            //cached: true,
             colors: true
         }
     }).listen(8080, "localhost", function (err) {
@@ -86,8 +98,7 @@ gulp.task("webpack-dev-server", function (callback) {
     });
 });
 
-var rimraf = require("rimraf");
-
 gulp.task("clean", function (cb) {
+    var rimraf = require("rimraf");
     rimraf("{wwwroot,dist}/**/*", cb);
 });
