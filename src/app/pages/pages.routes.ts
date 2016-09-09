@@ -23,6 +23,7 @@ import {Editors} from './editors/editors.component';
 import {Ckeditor} from './editors/components/ckeditor/ckeditor.component';
 import {Components} from './components/components.component';
 import {TreeView} from './components/components/treeView/treeView.component';
+import {SmartTables} from './tables/components/smartTables/smartTables.component';
 
 //noinspection TypeScriptValidateTypes
 export const PagesRoutes:RouterConfig = [
@@ -218,6 +219,15 @@ export const PagesRoutes:RouterConfig = [
             data: {
               menu: {
                 title: 'Basic Tables',
+              }
+            }
+          },
+          {
+            path: 'smarttables',
+            component: SmartTables,
+            data: {
+              menu: {
+                title: 'Smart Tables',
               }
             }
           }
