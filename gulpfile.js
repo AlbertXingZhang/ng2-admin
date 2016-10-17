@@ -17,12 +17,12 @@ gulp.task("default", ["webpack-dev-server"]);
 //               can serve an old app on refresh
 gulp.task("build-dev", function (callback) {
     // modify some webpack config options
-    var myConfig = require("./config/webpack.dev.js");
+    var myConfig = require("./config/webpack.dev")();
     myConfig.output.path = "wwwroot";
     myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 
     // run webpack
-    webpack(myConfig, callback).watch(null, function (err, stats) {
+    webpack(myConfig).watch(null, function (err, stats) {
         if (err) throw new gutil.PluginError("build-dev", err);
         gutil.log("[build-dev]", stats.toString({
             colors: true
@@ -33,7 +33,7 @@ gulp.task("build-dev", function (callback) {
 // Production build
 gulp.task("build", function (callback) {
     // modify some webpack config options
-    var myConfig = require("./config/webpack.prod.js");
+    var myConfig = require("./config/webpack.prod")();
     myConfig.bail = true;
     myConfig.output.path = "wwwroot";
     myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
@@ -50,7 +50,7 @@ gulp.task("build", function (callback) {
 
 gulp.task("webpack:build", function (callback) {
     // modify some webpack config options
-    var myConfig = require("./config/webpack.prod.js");
+    var myConfig = require("./config/webpack.prod")();
     myConfig.output.path = "wwwroot";
     myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 
@@ -66,7 +66,7 @@ gulp.task("webpack:build", function (callback) {
 
 gulp.task("webpack:build-dev", function (callback) {
     // modify some webpack config options
-    var myConfig = require("./config/webpack.dev.js");
+    var myConfig = require("./config/webpack.dev")();
     myConfig.output.path = "wwwroot";
     myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 
@@ -82,7 +82,7 @@ gulp.task("webpack:build-dev", function (callback) {
 
 gulp.task("webpack-dev-server", function (callback) {
     // modify some webpack config options
-    var myConfig = require("./config/webpack.dev.js");
+    var myConfig = require("./config/webpack.dev")();
     myConfig.output.path = __dirname + "/wwwroot";
     myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 

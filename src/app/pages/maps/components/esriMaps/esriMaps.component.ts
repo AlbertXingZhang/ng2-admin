@@ -1,13 +1,8 @@
 import {Component, ElementRef} from '@angular/core';
-import {BaCard} from '../../../../theme/components';
-
 import {MapController} from "./MapController";
 
 @Component({
   selector: 'esri-maps',
-  pipes: [],
-  providers: [],
-  directives: [BaCard],
   styles: [require('./esriMaps.scss')],
   template: require('./esriMaps.html'),
 })
