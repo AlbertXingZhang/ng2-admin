@@ -34,7 +34,6 @@ gulp.task("build-dev", function (callback) {
 gulp.task("build", function (callback) {
     // modify some webpack config options
     var myConfig = require("./config/webpack.prod")();
-    myConfig.bail = true;
     myConfig.output.path = "wwwroot";
     myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
 
