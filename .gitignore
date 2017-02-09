@@ -244,8 +244,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-# @AngularClass
-
 # Logs
 logs
 *.log
@@ -300,6 +298,8 @@ npm-debug.log
 .webpack.json
 /build
 /build/**
+/compiled
+/dll
 
 # Doc #
 /doc/
@@ -307,3 +307,9 @@ npm-debug.log
 # IDE #
 .idea/
 *.swp
+
+# Angular #
+*.ngfactory.ts
+*.css.shim.ts
+*.ngsummary.json
+*.shim.ngstyle.ts

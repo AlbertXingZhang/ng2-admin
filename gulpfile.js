@@ -15,11 +15,10 @@ gulp.task("default", ["webpack-dev-server"]);
 // Advantage: No server required, can run app from filesystem
 // Disadvantage: Requests are not blocked until bundle is available,
 //               can serve an old app on refresh
-gulp.task("build-dev", function (callback) {
+gulp.task("build-dev", function () {
     // modify some webpack config options
     var myConfig = require("./config/webpack.dev")();
-    myConfig.output.path = "wwwroot";
-    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
+    myConfig.plugins.push(ProgressPlugin);
 
     // run webpack
     webpack(myConfig).watch(null, function (err, stats) {
@@ -32,10 +31,12 @@ gulp.task("build-dev", function (callback) {
 
 // Production build
 gulp.task("build", function (callback) {
+    process.env.npm_lifecycle_event += 'aot';
+
     // modify some webpack config options
     var myConfig = require("./config/webpack.prod")();
-    myConfig.output.path = "wwwroot";
-    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
+    myConfig.bail = true;
+    myConfig.plugins.push(ProgressPlugin);
 
     // run webpack
     webpack(myConfig, function (err, stats) {
@@ -50,8 +51,8 @@ gulp.task("build", function (callback) {
 gulp.task("webpack:build", function (callback) {
     // modify some webpack config options
     var myConfig = require("./config/webpack.prod")();
-    myConfig.output.path = "wwwroot";
-    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
+    myConfig.bail = true;
+    myConfig.plugins.push(ProgressPlugin);
 
     // run webpack
     webpack(myConfig, function (err, stats) {
@@ -66,8 +67,7 @@ gulp.task("webpack:build", function (callback) {
 gulp.task("webpack:build-dev", function (callback) {
     // modify some webpack config options
     var myConfig = require("./config/webpack.dev")();
-    myConfig.output.path = "wwwroot";
-    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
+    myConfig.plugins.push(ProgressPlugin);
 
     // run webpack
     webpack(myConfig, function (err, stats) {
@@ -79,15 +79,20 @@ gulp.task("webpack:build-dev", function (callback) {
     });
 });
 
-gulp.task("webpack-dev-server", function (callback) {
+gulp.task("webpack-dev-server", function () {
     // modify some webpack config options
     var myConfig = require("./config/webpack.dev")();
-    myConfig.output.path = __dirname + "/wwwroot";
-    myConfig.plugins = myConfig.plugins.concat(ProgressPlugin);
+    myConfig.entry.main = ["webpack-dev-server/client?http://localhost:8080/",
+        "webpack/hot/dev-server", myConfig.entry.main];
+    myConfig.plugins.push(ProgressPlugin);
+    myConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
 
     // Start a webpack-dev-server
     new WebpackDevServer(webpack(myConfig), {
-        contentBase: "src",
+        hot: true,
+        proxy: {
+            "**": "http://localhost:64508"
+        },
         stats: {
             colors: true
         }
@@ -99,5 +104,5 @@ gulp.task("webpack-dev-server", function (callback) {
 
 gulp.task("clean", function (cb) {
     var rimraf = require("rimraf");
-    rimraf("{wwwroot,dist}/**/*", cb);
+    rimraf("{dist,compiled,dll}/**/*", cb);
 });

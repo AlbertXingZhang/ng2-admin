@@ -34,4 +34,4 @@ import { LineMapsService } from './components/lineMaps/lineMaps.service';
     LineMapsService
   ]
 })
-export default class MapsModule {}
+export class MapsModule {}
