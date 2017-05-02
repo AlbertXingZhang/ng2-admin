@@ -1,13 +1,13 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 
 import {PieChartService} from './pieChart.service';
 
 import 'easy-pie-chart/dist/jquery.easypiechart.js';
-import 'style-loader!./pieChart.scss';
 
 @Component({
   selector: 'pie-chart',
-  templateUrl: './pieChart.html'
+  templateUrl: './pieChart.html',
+  styleUrls: ['./pieChart.scss']
 })
 // TODO: move easypiechart to component
 export class PieChart {

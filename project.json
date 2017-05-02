@@ -25,6 +25,9 @@
   },
 
   "buildOptions": {
+    "compile": {
+      "exclude": [ "node_modules" ]
+    },
     "emitEntryPoint": true,
     "preserveCompilationContext": true
   },
