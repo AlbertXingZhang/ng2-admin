@@ -8,7 +8,7 @@ var gulp = require('gulp');
 gulp.task('default', function (cb) {
     // place code for your default task here
     const spawn = require('child_process').spawn;
-    const child = spawn('ng.cmd', ['serve', '--hmr']);
+    const child = spawn('ng.cmd', ['serve', '--ec', '--hmr']);
 
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
